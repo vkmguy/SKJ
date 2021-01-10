@@ -34,10 +34,10 @@ public class Client {
 		while (true) {
 			String inp = sc.nextLine();
 			endBuf = inp.getBytes();
-			DatagramPacket endReq = new DatagramPacket(endBuf, endBuf.length, theIp, port);
+			DatagramPacket req = new DatagramPacket(endBuf, endBuf.length, theIp, port);
 			try {
 				assert ds != null;
-				ds.send(endReq);
+				ds.send(req);
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			}
