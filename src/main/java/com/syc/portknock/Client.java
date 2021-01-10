@@ -8,19 +8,20 @@ import java.util.logging.Logger;
 
 public class Client {
 	private static final Logger logger = Logger.getLogger(Client.class.getName());
-	public static void main(String[] args) throws IOException {
+
+	public static void main(String[] args) {
 		final String ip = args[0];
-		for (int i=1;i<args.length;i++) {
+		for (int i = 1; i < args.length; i++) {
 			request(ip, Integer.parseInt(args[i]));
 		}
 	}
 
 	@SuppressWarnings("resource")
 	public static void request(String ip, int port) {
-
+		logger.log(Level.INFO, "Starting UDP Client in port: " + port);
 		new Thread(() -> {
-			logger.log(Level.INFO, "Creating  thread ID: "+ Thread.currentThread().getId());
-		Scanner sc = new Scanner(System.in);
+			logger.log(Level.INFO, "Creating  thread ID: " + Thread.currentThread().getId());
+			Scanner sc = new Scanner(System.in);
 			DatagramSocket ds = null;
 			InetAddress theIp = null;
 			try {
