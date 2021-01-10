@@ -1,12 +1,7 @@
 package com.syc.portknock;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +11,8 @@ import java.util.logging.Logger;
 
 public class Server {
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
-	private static Map<InetAddress, AddressStore> packetCountsSent = new HashMap<>();
+	private static volatile Map<InetAddress, AddressStore> packetCountsSent = new HashMap<>();
+
 	public static void main(String[] args) {
 		for (String thePort : args) {
 			service(Integer.parseInt(thePort));
@@ -24,7 +20,7 @@ public class Server {
 	}
 
 	private static void service(int port) {
-		logger.log(Level.INFO,"Starting UDP server in port: "+ port);
+		logger.log(Level.INFO, "Starting UDP server in port: " + port);
 		new Thread(() -> {
 			DatagramSocket ds = null;
 			try {
@@ -56,13 +52,13 @@ public class Server {
 						+ packetCountsSent.get(clientAddress).getData().size());
 				// exit when the request is "bye"
 				if (data.equalsIgnoreCase("bye")) {
-					logger.log(Level.INFO,"UDP Client sent bye.....EXITING");
-					break;
+					logger.log(Level.INFO, "UDP Client sent bye.....EXITING");
+					process(ds);
 				}
 				// Clear the buffer after every message.
 				receive = new byte[UDP.MAX_DATAGRAM_SIZE];
 			}
-			process(ds);
+//			process(ds);
 		}).start();
 	}
 
@@ -74,11 +70,13 @@ public class Server {
 			byte[] sendResp = String.valueOf(port).getBytes();
 			DatagramPacket resp = new DatagramPacket(sendResp, sendResp.length, address,
 					packetCountsSent.get(address).getPort());
+			int datagramSocketPort = datagramSocket.getPort();
+			logger.log(Level.INFO, "the value of dataGramPort " + datagramSocketPort);
 			try {
 				datagramSocket.send(resp);
-				datagramSocket.close();
+//				datagramSocket.close();
 			} catch (IOException e) {
-				logger.log(Level.INFO,"Error Occurred while sending response: " + e.getMessage());
+				logger.log(Level.INFO, "Error Occurred while sending response: " + e.getMessage());
 			}
 			Socket client = null;
 			ServerSocket server;
